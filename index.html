@@ -16,6 +16,7 @@
             background-color: #000;
             color: #00ff41;
             overflow: hidden; /* 防止整体滚动 */
+            -webkit-tap-highlight-color: transparent; /* 去除点击高亮 */
         }
         
         /* 霓虹发光特效 */
@@ -79,7 +80,7 @@
                 <div class="text-6xl animate-pulse">?</div>
             </div>
             
-            <button onclick="startReading()" class="mt-8 px-8 py-3 bg-transparent neon-border text-[#00ff41] font-bold text-xl hover:bg-[#00ff41] hover:text-black transition-all rounded uppercase tracking-widest shadow-[0_0_15px_#00ff41]">
+            <button id="connect-btn" onclick="startReading()" class="mt-8 px-8 py-3 bg-transparent neon-border text-[#00ff41] font-bold text-xl hover:bg-[#00ff41] hover:text-black transition-all rounded uppercase tracking-widest shadow-[0_0_15px_#00ff41]">
                 CONNECT SOUL
             </button>
 
@@ -88,7 +89,8 @@
             </button>
         </div>
 
-        <div id="result-screen" class="hidden w-full h-[550px] card-container"> <div id="card-element" class="card-inner w-full h-full">
+        <div id="result-screen" class="hidden w-full h-[550px] card-container"> 
+            <div id="card-element" class="card-inner w-full h-full">
                 <div class="card-face neon-box-purple">
                     <div class="text-4xl">🔮</div>
                     <div class="mt-4 text-sm text-[#bf00ff]">Deciphering Blockchain...</div>
@@ -145,7 +147,7 @@
         const tg = window.Telegram.WebApp;
         tg.expand(); // 全屏显示
 
-        // 🃏 牌库数据 (Web3 魔改版)
+        // 🃏 牌库数据
         const deck = [
             { 
                 name: "The Fool (Degen)", 
@@ -185,28 +187,69 @@
         ];
 
         let isPremium = false;
+        let isDrawing = false; // 防止重复点击
 
-        // 📺 核心功能：播放广告并抽牌
-        // 这里植入了您的真实 Block ID: 20376
-        function startReading() {
-            // 检查 Adsgram 是否加载
-            if (window.Adsgram) {
-                // ✅ 真实广告初始化
-                const AdController = window.Adsgram.init({ blockId: "20376" });
-                
-                // 显示广告
-                AdController.show().then((result) => {
-                    // 广告看完了 -> 抽牌
+        // 🚀 核心功能：双重保险的广告加载机制
+        async function startReading() {
+            if (isDrawing) return; // 如果正在抽，点也没用
+            isDrawing = true;
+
+            // 1. 改变按钮状态，给用户反馈
+            const btn = document.getElementById('connect-btn');
+            const originalText = btn.innerText;
+            btn.innerText = "CONNECTING...";
+            btn.style.opacity = "0.7";
+
+            // 震动反馈
+            if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+
+            try {
+                // 检查是否在 Premium 状态，如果是，直接抽牌不看广告
+                if (isPremium) {
                     drawCard();
-                }).catch((result) => {
-                    // 广告出错或跳过 -> 也抽牌 (保底)
-                    console.log("Ad skipped or error:", result);
+                    return;
+                }
+
+                // 检查 Adsgram 环境
+                if (window.Adsgram) {
+                    const blockId = "20376"; // 您的真实ID
+                    const AdController = window.Adsgram.init({ blockId: blockId });
+
+                    // ⏳ 创建一个超时 Promise (3秒后自动放弃等待广告)
+                    const timeoutPromise = new Promise((resolve) => {
+                        setTimeout(() => {
+                            console.log("广告加载超时，强制跳过");
+                            resolve('timeout'); 
+                        }, 3000);
+                    });
+
+                    // 🏁 比赛开始：看广告先加载完，还是时间先到3秒
+                    const result = await Promise.race([
+                        AdController.show(), // 广告加载任务
+                        timeoutPromise       // 倒计时任务
+                    ]);
+
+                    if (result === 'timeout') {
+                        // 超时了，直接开牌
+                        drawCard();
+                    } else {
+                        // 广告正常播放完毕（或者用户跳过），开牌
+                        drawCard();
+                    }
+                } else {
+                    // 如果根本没有 Adsgram 对象 (如电脑端拦截)，直接开牌
+                    console.warn("Adsgram SDK 未加载");
                     drawCard();
-                });
-            } else {
-                // 没加载出来 -> 直接抽牌
-                console.log("Adsgram SDK not found");
+                }
+            } catch (error) {
+                // 如果发生任何未知错误，保底执行开牌，绝不卡死
+                console.error("广告流程出错:", error);
                 drawCard();
+            } finally {
+                // 恢复按钮状态
+                btn.innerText = originalText;
+                btn.style.opacity = "1";
+                isDrawing = false;
             }
         }
 
@@ -238,4 +281,18 @@
         // 🔄 重置
         function resetApp() {
             document.getElementById('card-element').classList.remove('flipped');
-            document.getElementById('action-buttons').
+            document.getElementById('action-buttons').classList.add('hidden');
+            document.getElementById('action-buttons').classList.remove('flex');
+            
+            setTimeout(() => {
+                document.getElementById('result-screen').classList.add('hidden');
+                document.getElementById('home-screen').style.display = 'flex';
+                // 重置模糊
+                document.getElementById('deep-insight-text').classList.add('blurred-text');
+                document.getElementById('unlock-overlay').style.display = 'flex';
+            }, 600);
+        }
+
+        // 🔐 模拟解锁牌库
+        function unlockPremium() {
+            tg.showConfirm
