@@ -19,13 +19,11 @@
             -webkit-tap-highlight-color: transparent;
         }
         
-        /* 霓虹发光特效 */
         .neon-text { text-shadow: 0 0 5px #00ff41, 0 0 10px #00ff41; }
         .neon-purple { text-shadow: 0 0 5px #bf00ff, 0 0 10px #bf00ff; color: #bf00ff; }
         .neon-border { box-shadow: 0 0 5px #00ff41, 0 0 10px #00ff41, inset 0 0 5px #00ff41; border: 1px solid #00ff41; }
         .neon-box-purple { box-shadow: 0 0 5px #bf00ff, 0 0 10px #bf00ff, inset 0 0 5px #bf00ff; border: 1px solid #bf00ff; }
 
-        /* 卡片翻转 */
         .card-container { perspective: 1000px; }
         .card-inner {
             position: relative;
@@ -71,7 +69,7 @@
                 CONNECT SOUL
             </button>
 
-            <button onclick="unlockPremium()" id="premium-btn" class="mt-4 px-4 py-2 text-xs text-[#bf00ff] border border-[#bf00ff] rounded hover:bg-[#bf00ff] hover:text-white transition-colors">
+            <button onclick="unlockFullDeck()" id="premium-btn" class="mt-4 px-4 py-2 text-xs text-[#bf00ff] border border-[#bf00ff] rounded hover:bg-[#bf00ff] hover:text-white transition-colors">
                 🔓 UNLOCK FULL DECK (78 Cards)
             </button>
         </div>
@@ -102,10 +100,18 @@
                         <p id="deep-insight-text" class="text-xs text-gray-400 leading-relaxed blurred-text">
                             Hidden knowledge lies here. The blockchain whispers secrets only to those who dare to look deeper. Future trends and alpha signals awaits.
                         </p>
-                        <div id="unlock-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm rounded">
-                            <button onclick="shareToUnlock()" class="mb-2 px-3 py-1 bg-[#bf00ff] text-white text-xs font-bold rounded shadow-[0_0_10px_#bf00ff]">
-                                📢 Share to Reveal
-                            </button>
+                        
+                        <div id="unlock-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm rounded p-2 text-center">
+                            <p class="text-[10px] text-gray-300 mb-3">UNLOCK HIDDEN ALPHA</p>
+                            <div class="flex flex-col gap-2 w-full px-4">
+                                <button id="share-btn" onclick="shareToUnlock()" class="w-full py-1.5 bg-[#bf00ff] text-white text-xs font-bold rounded shadow-[0_0_10px_#bf00ff]">
+                                    📢 Share to Reveal (0/3)
+                                </button>
+                                <div class="text-[9px] text-gray-500">- OR -</div>
+                                <button onclick="payToUnlockSingle()" class="w-full py-1.5 border border-[#00ff41] text-[#00ff41] text-xs font-bold rounded hover:bg-[#00ff41] hover:text-black">
+                                    💎 Pay 0.1 TON
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -115,7 +121,7 @@
 
     <div id="action-buttons" class="hidden w-full max-w-sm flex gap-4 z-10">
         <button onclick="shareResult()" class="flex-1 py-3 border border-[#00ff41] text-[#00ff41] hover:bg-[#00ff41] hover:text-black font-bold text-sm uppercase transition-colors">
-            Share Result
+            Share
         </button>
         <button onclick="resetApp()" class="flex-1 py-3 border border-[#bf00ff] text-[#bf00ff] hover:bg-[#bf00ff] hover:text-black font-bold text-sm uppercase transition-colors">
             Draw Again
@@ -123,7 +129,7 @@
     </div>
 
     <div class="text-[10px] text-gray-600 mt-2 text-center w-full">
-        CYBER ORACLE v4.0 Final | <span class="text-[#00ff41]">Adsgram Secured</span>
+        CYBER ORACLE v5.0 (Growth) | <span class="text-[#00ff41]">Adsgram Secured</span>
     </div>
 
     <script>
@@ -131,24 +137,24 @@
         tg.expand(); 
 
         const deck = [
-            { name: "The Fool (Degen)", icon: "🤡", meaning: "A new token launch. Infinite potential, infinite risk.", signal: "BUY THE DIP (High Risk)", deep: "The market ignores logic today. Fortune favors the bold." },
-            { name: "The High Priestess", icon: "🌙", meaning: "Hidden knowledge. Something is happening behind the scenes.", signal: "DYOR (Do Your Own Research)", deep: "Insider wallets are moving. Check on-chain data." },
-            { name: "The Tower (Crash)", icon: "💥", meaning: "Sudden destruction. The system is resetting.", signal: "PANIC SELL / HEDGE", deep: "A black swan event is approaching. Stablecoins are your friend." },
-            { name: "The Moon (Scam)", icon: "🐺", meaning: "Illusion and deception. Rugpull imminent.", signal: "REVOKE PERMISSIONS", deep: "Someone is trying to phish you. Double check every URL." },
-            { name: "The Sun (Bull)", icon: "☀️", meaning: "Success, radiance. Green candles are printing.", signal: "HODL & ENJOY", deep: "The trend is your friend. Your portfolio is healing." }
+            { name: "The Fool (Degen)", icon: "🤡", meaning: "A new token launch. Infinite potential, infinite risk.", signal: "BUY THE DIP (High Risk)", deep: "The market ignores logic today. A memecoin you hold might 10x or go to zero. Fortune favors the bold, but don't bet the rent." },
+            { name: "The High Priestess", icon: "🌙", meaning: "Hidden knowledge. Something is happening behind the scenes.", signal: "DYOR (Do Your Own Research)", deep: "Insider wallets are moving. Check the on-chain data before you make a move. The chart is lying to you." },
+            { name: "The Tower (Crash)", icon: "💥", meaning: "Sudden destruction. The system is resetting.", signal: "PANIC SELL / HEDGE", deep: "A black swan event is approaching. Stablecoins are your friend today. Don't try to catch the falling knife." },
+            { name: "The Moon (Scam)", icon: "🐺", meaning: "Illusion and deception. Rugpull imminent.", signal: "REVOKE PERMISSIONS", deep: "Someone is trying to phish you. Double check every URL. The hype is fake, generated by bots." },
+            { name: "The Sun (Bull)", icon: "☀️", meaning: "Success, radiance. Green candles are printing.", signal: "HODL & ENJOY", deep: "The trend is your friend. Your portfolio is healing. It's a good day to take some profits or let it ride." }
         ];
 
-        let isPremium = false;
+        let isPremium = false; // 全局解锁
         let isDrawing = false;
+        let shareCount = 0;    // 当前卡片的分享计数
 
-        // 🚀 v4.0 核心：带超时保护的广告加载
         async function startReading() {
             if (isDrawing) return;
             isDrawing = true;
 
             const btn = document.getElementById('connect-btn');
             const originalText = btn.innerText;
-            btn.innerText = "CONNECTING..."; // 点击反馈
+            btn.innerText = "CONNECTING...";
             btn.style.opacity = "0.7";
 
             if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
@@ -156,32 +162,19 @@
             try {
                 if (isPremium) { drawCard(); return; }
 
-                // 检查 Adsgram 是否存在 (您刚才截图显示它可能未加载)
                 if (window.Adsgram) {
-                    // ✅ 您的真实ID: 20376
                     const AdController = window.Adsgram.init({ blockId: "20376" });
-
-                    // 创建一个 3秒 的倒计时
                     const timeoutPromise = new Promise(resolve => setTimeout(() => resolve('timeout'), 3000));
-
-                    // 🏁 比赛：广告显示 vs 3秒倒计时
                     const result = await Promise.race([
-                        AdController.show().catch(e => 'error'), // 捕获广告错误
+                        AdController.show().catch(e => 'error'),
                         timeoutPromise
                     ]);
-
-                    // 无论结果如何，都执行抽牌，绝不卡死
-                    console.log("广告结果:", result);
                     drawCard();
-                    
                 } else {
-                    // 如果 SDK 没加载 (被拦截)，直接抽牌
-                    console.warn("Adsgram 被拦截，跳过广告");
                     drawCard();
                 }
             } catch (error) {
-                console.error("未知错误:", error);
-                drawCard(); // 保底
+                drawCard();
             } finally {
                 btn.innerText = originalText;
                 btn.style.opacity = "1";
@@ -198,6 +191,15 @@
             document.getElementById('card-meaning').innerText = card.meaning;
             document.getElementById('crypto-signal').innerText = card.signal;
             document.getElementById('deep-insight-text').innerText = card.deep;
+
+            // 每次抽牌重置分享计数
+            shareCount = 0;
+            updateShareButton();
+            // 重置模糊状态 (如果是非Premium用户)
+            if(!isPremium) {
+                document.getElementById('deep-insight-text').classList.add('blurred-text');
+                document.getElementById('unlock-overlay').style.display = 'flex';
+            }
 
             document.getElementById('home-screen').style.display = 'none';
             document.getElementById('result-screen').classList.remove('hidden');
@@ -216,19 +218,62 @@
             setTimeout(() => {
                 document.getElementById('result-screen').classList.add('hidden');
                 document.getElementById('home-screen').style.display = 'flex';
-                document.getElementById('deep-insight-text').classList.add('blurred-text');
-                document.getElementById('unlock-overlay').style.display = 'flex';
             }, 600);
         }
 
-        function unlockPremium() {
-            tg.showConfirm("Unlock full deck for 0.99 TON?", (confirmed) => {
+        // 核心：分享计数逻辑
+        function shareToUnlock() {
+            shareResult(); // 调起分享
+            
+            // 计数 +1
+            shareCount++;
+            
+            if (shareCount >= 3) {
+                // 达到3次，解锁
+                tg.showPopup({ message: "Insight Unlocked! 🔓" });
+                document.getElementById('deep-insight-text').classList.remove('blurred-text');
+                document.getElementById('unlock-overlay').style.display = 'none';
+            } else {
+                // 还没到，更新按钮提示
+                const remaining = 3 - shareCount;
+                tg.showAlert(`Shared! ${remaining} more shares needed to unlock.`);
+                updateShareButton();
+            }
+        }
+
+        function updateShareButton() {
+            const btn = document.getElementById('share-btn');
+            if(shareCount >= 3) {
+                btn.innerText = "✅ Unlocked";
+            } else {
+                btn.innerText = `📢 Share to Reveal (${shareCount}/3)`;
+            }
+        }
+
+        // 模拟单次付费解锁
+        function payToUnlockSingle() {
+             tg.showConfirm("Pay 0.1 TON to reveal this insight?", (confirmed) => {
+                if(confirmed) {
+                    tg.showAlert("Connecting Wallet... (Simulated)");
+                    setTimeout(() => {
+                        document.getElementById('deep-insight-text').classList.remove('blurred-text');
+                        document.getElementById('unlock-overlay').style.display = 'none';
+                        tg.showAlert("Payment Successful!");
+                    }, 1000);
+                }
+            });
+        }
+
+        // 模拟永久解锁
+        function unlockFullDeck() {
+            tg.showConfirm("Unlock full deck & remove ads for 0.99 TON?", (confirmed) => {
                 if(confirmed) {
                     tg.showAlert("Connecting Wallet... (Simulated)");
                     setTimeout(() => {
                         isPremium = true;
                         document.getElementById('premium-btn').innerText = "👑 PREMIUM ACTIVE";
                         document.getElementById('premium-btn').classList.add("bg-[#bf00ff]", "text-white");
+                        tg.showAlert("Premium Unlocked!");
                     }, 1500);
                 }
             });
@@ -236,18 +281,9 @@
 
         function shareResult() {
             const cardName = document.getElementById('card-name').innerText;
-            const text = `I just drew ${cardName} on Cyber Oracle!`;
+            const text = `I just drew ${cardName} on Cyber Oracle! Check your fate:`;
             const url = "https://t.me/DailyCyberOracle_bot";
             tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`);
-        }
-
-        function shareToUnlock() {
-            shareResult();
-            setTimeout(() => {
-                document.getElementById('deep-insight-text').classList.remove('blurred-text');
-                document.getElementById('unlock-overlay').style.display = 'none';
-                tg.showPopup({ message: "Insight Unlocked!" });
-            }, 2000); 
         }
     </script>
 </body>
